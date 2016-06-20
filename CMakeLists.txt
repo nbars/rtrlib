@@ -52,8 +52,9 @@ add_coverage(rtrlib)
 target_link_libraries(rtrlib ${RTRLIB_LINK})
 
 #Add rtrlib as static version. This will help while debugging
-add_library(rtrlib-static STATIC ${RTRLIB_SRC})
-target_link_libraries(rtrlib-static ${RTRLIB_LINK})
+#add_library(rtrlib-static STATIC ${RTRLIB_SRC})
+#target_link_libraries(rtrlib-static ${RTRLIB_LINK})
+
 
 #Add rtrlib test framework lib (rtr_tfwlib)
 add_library(rtr_tfwlib STATIC
@@ -61,7 +62,7 @@ add_library(rtr_tfwlib STATIC
   rtr_tfw/pdu.c
   rtr_tfw/debug.c
   )
-target_link_libraries(rtr_tfwlib rtrlib-static)
+target_link_libraries(rtr_tfwlib rtrlib)
 
 ADD_SUBDIRECTORY(tools)
 

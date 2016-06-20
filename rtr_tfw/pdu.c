@@ -61,6 +61,10 @@ bool rtr_pdu_check_size (const struct pdu_header *pdu, debug_trace_t *debug_trac
 		if (sizeof(struct pdu_serial_notify) == pdu->len)
 			retval = true;
 	break;
+	case SERIAL_QUERY:
+		if (sizeof(struct pdu_serial_query) == pdu->len)
+			retval = true;
+	break;
 	case RESET_QUERY:
 		if (sizeof(struct pdu_reset_query) == pdu->len)
 			retval = true;
