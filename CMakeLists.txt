@@ -19,9 +19,12 @@ if(NOT APPLE)
 endif(NOT APPLE)
 include(UseMultiArch) # needed for debian packaging
 
-set(RTRLIB_SRC rtrlib/rtr_mgr.c rtrlib/lib/utils.c rtrlib/lib/ip.c rtrlib/lib/ipv4.c rtrlib/lib/ipv6.c rtrlib/lib/log.c
+set(RTRLIB_SRC rtrlib/rtr_mgr.c rtrlib/lib/utils.c rtrlib/lib/ip.c rtrlib/lib/ipv4.c
+    rtrlib/lib/ipv6.c rtrlib/lib/log.c rtrlib/lib/debug.c rtrlib/lib/list.c
     rtrlib/pfx/lpfst/lpfst.c rtrlib/pfx/lpfst/lpfst-pfx.c rtrlib/transport/transport.c
-    rtrlib/transport/tcp/tcp_transport.c rtrlib/rtr/rtr.c rtrlib/rtr/packets.c rtrlib/spki/hashtable/ht-spkitable.c rtrlib/spki/hashtable/tommyds-1.8/tommy.c)
+    rtrlib/transport/tcp/tcp_transport.c rtrlib/rtr/rtr.c rtrlib/rtr/packets.c
+    rtrlib/spki/hashtable/ht-spkitable.c rtrlib/spki/hashtable/tommyds-1.8/tommy.c
+    )
 set(RTRLIB_LINK ${RT_LIB} ${CMAKE_THREAD_LIBS_INIT})
 
 find_package(LibSSH 0.6.0)
@@ -48,20 +51,24 @@ add_library(rtrlib SHARED ${RTRLIB_SRC})
 add_coverage(rtrlib)
 target_link_libraries(rtrlib ${RTRLIB_LINK})
 
+#Add rtrlib as static version. This will help while debugging
+add_library(rtrlib-static STATIC ${RTRLIB_SRC})
+target_link_libraries(rtrlib-static ${RTRLIB_LINK})
+
+#Add rtrlib test framework lib (rtr_tfwlib)
+add_library(rtr_tfwlib STATIC
+  rtr_tfw/rtr_test_framework.c
+  rtr_tfw/pdu.c
+  rtr_tfw/debug.c
+  )
+target_link_libraries(rtr_tfwlib rtrlib-static)
+
 ADD_SUBDIRECTORY(tools)
 
 ADD_SUBDIRECTORY(doxygen/examples)
 
-ADD_SUBDIRECTORY(tests)
 ENABLE_TESTING()
-ADD_TEST(test_pfx tests/test_pfx)
-ADD_TEST(test_lpfst tests/test_lpfst)
-#ADD_TEST(test_pfx_locks tests/test_pfx_locks)
-
-ADD_TEST(test_ht_spkitable tests/test_ht_spkitable)
-ADD_TEST(test_ht_spkitable_locks tests/test_ht_spkitable_locks)
-
-ADD_TEST(test_live_validation tests/test_live_validation)
+ADD_SUBDIRECTORY(tests)
 
 #install lib
 set (RTRLIB_VERSION_MAJOR 0)
