@@ -33,7 +33,8 @@ set(RTRLIB_SRC rtrlib/rtr_mgr.c rtrlib/lib/utils.c rtrlib/lib/alloc_utils.c rtrl
     rtrlib/lib/ip.c rtrlib/lib/ipv4.c rtrlib/lib/ipv6.c rtrlib/lib/log.c
     rtrlib/pfx/trie/trie.c rtrlib/pfx/trie/trie-pfx.c rtrlib/transport/transport.c
     rtrlib/transport/tcp/tcp_transport.c rtrlib/rtr/rtr.c rtrlib/rtr/packets.c
-    rtrlib/spki/hashtable/ht-spkitable.c rtrlib/spki/hashtable/tommyds-1.8/tommy.c)
+    rtrlib/spki/hashtable/ht-spkitable.c rtrlib/spki/hashtable/tommyds-1.8/tommy.c
+    rtrlib/transport/mem/mem_transport.c rtrlib/transport/mem/mem_transport.h)
 set(RTRLIB_LINK ${RT_LIB} ${CMAKE_THREAD_LIBS_INIT})
 
 find_package(LibSSH 0.5.0 QUIET)
@@ -67,6 +68,15 @@ set_target_properties(rtrlib PROPERTIES C_VISIBILITY_PRESET hidden)
 add_library(rtrlib_static STATIC ${RTRLIB_SRC})
 add_coverage(rtrlib_static)
 target_link_libraries(rtrlib_static ${RTRLIB_LINK})
+
+SET(CMAKE_C_COMPILER afl-clang-fast)
+SET(CMAKE_CXX_COMPILER afl-clang-fast++)
+
+add_executable(fuzzer fuzz/fuzzer.c ${RTRLIB_SRC})
+set_target_properties(fuzzer PROPERTIES COMPILE_FLAGS "")
+set_target_properties(fuzzer PROPERTIES LINK_FLAGS "")
+target_link_libraries(fuzzer ${RTRLIB_LINK})
+
 
 ADD_SUBDIRECTORY(tools)
 

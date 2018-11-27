@@ -26,6 +26,8 @@ static void rtr_fsm_start(struct rtr_socket *rtr_socket);
 static void sighandler(int b);
 static int install_sig_handler();
 
+uint8_t ctrx = 0;
+
 static const char *socket_str_states[] = {
     [RTR_CONNECTING] = "RTR_CONNECTING",
     [RTR_ESTABLISHED] = "RTR_ESTABLISHED",
@@ -187,14 +189,18 @@ void rtr_fsm_start(struct rtr_socket *rtr_socket)
             RTR_DBG1("State: RTR_FAST_RECONNECT");
             tr_close(rtr_socket->tr_socket);
             rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
+            ctrx++;
+            if (ctrx > 10)
+                rtr_change_socket_state(rtr_socket, RTR_SHUTDOWN);
         }
 
         else if(rtr_socket->state == RTR_ERROR_NO_DATA_AVAIL) {
             RTR_DBG1("State: RTR_ERROR_NO_DATA_AVAIL");
             rtr_socket->request_session_id = true;
             rtr_socket->serial_number = 0;
-            rtr_change_socket_state(rtr_socket, RTR_RESET);
-            sleep(rtr_socket->retry_interval);
+            //rtr_change_socket_state(rtr_socket, RTR_RESET);
+            //sleep(rtr_socket->retry_interval);
+            rtr_change_socket_state(rtr_socket, RTR_SHUTDOWN);
             rtr_purge_outdated_records(rtr_socket);
         }
 
@@ -204,22 +210,29 @@ void rtr_fsm_start(struct rtr_socket *rtr_socket)
             rtr_socket->serial_number = 0;
             rtr_change_socket_state(rtr_socket, RTR_RESET);
             rtr_purge_outdated_records(rtr_socket);
+            ctrx++;
+            if (ctrx > 10)
+                rtr_change_socket_state(rtr_socket, RTR_SHUTDOWN);
         }
 
         else if(rtr_socket->state == RTR_ERROR_TRANSPORT) {
             RTR_DBG1("State: RTR_ERROR_TRANSPORT");
             tr_close(rtr_socket->tr_socket);
-            rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
+            //rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
             RTR_DBG("Waiting %u", rtr_socket->retry_interval);
-            sleep(rtr_socket->retry_interval);
+            //sleep(rtr_socket->retry_interval);
+            rtr_change_socket_state(rtr_socket, RTR_SHUTDOWN);
         }
 
         else if(rtr_socket->state == RTR_ERROR_FATAL) {
             RTR_DBG1("State: RTR_ERROR_FATAL");
             tr_close(rtr_socket->tr_socket);
-            rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
+            //rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
             RTR_DBG("Waiting %u", rtr_socket->retry_interval);
-            sleep(rtr_socket->retry_interval);
+            //sleep(rtr_socket->retry_interval);
+            ctrx++;
+            if (ctrx > 10)
+                rtr_change_socket_state(rtr_socket, RTR_SHUTDOWN);
         }
 
         else if(rtr_socket->state == RTR_SHUTDOWN) {

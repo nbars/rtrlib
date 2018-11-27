@@ -16,8 +16,8 @@
 
 
 static const unsigned int RTR_MAX_PDU_LEN = 3248; //error pdu: header(8) + len(4) + ipv6_pdu(32) + len(4) + 400*8 (400 char text)
-static const unsigned int RTR_RECV_TIMEOUT = 60;
-static const unsigned int RTR_SEND_TIMEOUT = 60;
+static const unsigned int RTR_RECV_TIMEOUT = 1;
+static const unsigned int RTR_SEND_TIMEOUT = 1;
 
 void __attribute__((weak)) rtr_change_socket_state(struct rtr_socket *rtr_socket, const enum rtr_socket_state new_state);
 int rtr_sync(struct rtr_socket *rtr_socket);
