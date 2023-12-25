@@ -186,7 +186,9 @@ void *rtr_fsm_start(struct rtr_socket *rtr_socket)
 			rtr_socket->request_session_id = true;
 			rtr_socket->serial_number = 0;
 			rtr_change_socket_state(rtr_socket, RTR_RESET);
+#ifndef FUZZING
 			sleep(rtr_socket->retry_interval);
+#endif
 			rtr_purge_outdated_records(rtr_socket);
 		}
 
@@ -204,7 +206,9 @@ void *rtr_fsm_start(struct rtr_socket *rtr_socket)
 			rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
 			RTR_DBG("Waiting %u", rtr_socket->retry_interval);
 			pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldcancelstate);
+#ifndef FUZZING
 			sleep(rtr_socket->retry_interval);
+#endif
 			pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldcancelstate);
 		}
 
@@ -214,7 +218,9 @@ void *rtr_fsm_start(struct rtr_socket *rtr_socket)
 			rtr_change_socket_state(rtr_socket, RTR_CONNECTING);
 			RTR_DBG("Waiting %u", rtr_socket->retry_interval);
 			pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldcancelstate);
+#ifndef FUZZING
 			sleep(rtr_socket->retry_interval);
+#endif
 			pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldcancelstate);
 		}
 

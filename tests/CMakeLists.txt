@@ -33,6 +33,7 @@ if(RTRLIB_BGPSEC_ENABLED)
     add_coverage(test_bgpsec)
 endif(RTRLIB_BGPSEC_ENABLED)
 
+add_subdirectory(fuzzers)
 
 if(UNIT_TESTING AND NOT APPLE)
     find_package(CMocka REQUIRED)

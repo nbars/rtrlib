@@ -21,6 +21,7 @@ uint16_t lrtr_convert_short(const enum target_byte_order tbo, const uint16_t val
 		return ntohs(value);
 
 	assert(0);
+	return 0;
 }
 
 uint32_t lrtr_convert_long(const enum target_byte_order tbo, const uint32_t value)
@@ -31,4 +32,5 @@ uint32_t lrtr_convert_long(const enum target_byte_order tbo, const uint32_t valu
 		return ntohl(value);
 
 	assert(0);
+	return 0;
 }

@@ -14,6 +14,7 @@
 #include "rtrlib/lib/log_private.h"
 #include "rtrlib/pfx/pfx_private.h"
 #include "rtrlib/rtr/rtr_private.h"
+#include "rtrlib/rtr_mgr.h"
 #include "rtrlib/rtrlib_export_private.h"
 #include "rtrlib/spki/hashtable/ht-spkitable_private.h"
 #include "rtrlib/transport/transport_private.h"
@@ -47,7 +48,11 @@ static void set_status(const struct rtr_mgr_config *conf, struct rtr_mgr_group *
 		       const struct rtr_socket *rtr_sock)
 {
 	MGR_DBG("Group(%u) status changed to: %s", group->preference, rtr_mgr_status_to_str(mgr_status));
-
+#ifdef FUZZING
+	if (mgr_status == RTR_MGR_ERROR) {
+		exit(1);
+	}
+#endif
 	group->status = mgr_status;
 	if (conf->status_fp)
 		conf->status_fp(group, mgr_status, rtr_sock, conf->status_fp_data);
